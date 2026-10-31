@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Car {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  brand         String
+  model         String
+  year          Int
+  bodyType      String   // sedan, suv, hatchback, mpv, coupe, convertible, pickup
+  fuelType      String   // petrol, diesel, electric, hybrid, cng, lpg
+  transmission  String   // manual, automatic, amt, cvt, dct
+  market        String   // india, global, usa, europe, uk
+  currency      String   @default("INR")
+  priceMin      Float    // in market currency (lakhs for INR, thousands for USD)
+  priceMax      Float
+  priceUnit     String   @default("lakh") // lakh, thousand, full
+  imageUrl      String?
+  description   String
+  isDemo        Boolean  @default(true)  // flag all demo/seed data
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  specs         CarSpec?
+  variants      Variant[]
+  features      CarFeature[]
+  markets       CarMarket[]
+
+  @@index([brand])
+  @@index([bodyType])
+  @@index([fuelType])
+  @@index([market])
+  @@index([priceMin, priceMax])
+}
+
+model CarSpec {
+  id              String  @id @default(cuid())
+  carId           String  @unique
+  car             Car     @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  // Engine / Motor
+  engineCC        Int?    // engine displacement in CC (null for EVs)
+  powerBhp        Float?  // brake horsepower
+  torqueNm        Float?  // newton metres
+  cylinderCount   Int?
+
+  // Fuel / Range
+  mileageKmpl     Float?  // km per litre (petrol/diesel/hybrid)
+  electricRangeKm Float?  // ARAI/EPA range for EVs
+  batteryKwh      Float?  // battery capacity for EVs/hybrids
+  fuelTankLitres  Float?
+
+  // Dimensions
+  seatingCapacity Int
+  bootLitres      Int?
+  lengthMm        Int?
+  widthMm         Int?
+  heightMm        Int?
+  wheelbaseMm     Int?
+  groundClearanceMm Int?
+
+  // Performance
+  topSpeedKmph    Float?
+  zeroToHundredSec Float?
+
+  // Safety
+  ncapRating      Int?    // 0-5 stars (null if not tested)
+  ncapSource      String? // "Global NCAP", "Euro NCAP", etc.
+
+  // Warranty
+  warrantyYears   Int?
+  warrantyKm      Int?
+
+  // Last verified
+  lastVerified    DateTime @default(now())
+  sourceUrl       String?
+}
+
+model Variant {
+  id           String  @id @default(cuid())
+  carId        String
+  car          Car     @relation(fields: [carId], references: [id], onDelete: Cascade)
+  name         String  // e.g. "XZ+", "ZX Turbo", "E"
+  priceMin     Float?
+  priceMax     Float?
+  fuelType     String? // override if variant has different fuel type
+  transmission String? // override
+  isBaseVariant Boolean @default(false)
+
+  @@index([carId])
+}
+
+model CarFeature {
+  id       String  @id @default(cuid())
+  carId    String
+  car      Car     @relation(fields: [carId], references: [id], onDelete: Cascade)
+  category String  // safety, comfort, infotainment, exterior, convenience
+  name     String  // e.g. "Sunroof", "6 Airbags", "360° Camera"
+  standard Boolean @default(false) // available on base variant
+  optional Boolean @default(false) // available as option
+
+  @@index([carId])
+  @@index([category])
+}
+
+model CarMarket {
+  id        String @id @default(cuid())
+  carId     String
+  car       Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
+  country   String
+  available Boolean @default(true)
+
+  @@unique([carId, country])
+  @@index([carId])
+}
