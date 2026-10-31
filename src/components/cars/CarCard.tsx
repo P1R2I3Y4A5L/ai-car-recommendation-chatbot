@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Users, Gauge, Shield, TrendingUp } from "lucide-react";
 import type { CarSummary } from "@/types";
 import { formatPrice, formatEfficiency, getFuelTypeColor, getBodyTypeEmoji } from "@/lib/utils";

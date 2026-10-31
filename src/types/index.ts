@@ -123,6 +123,7 @@ export interface CarSummary {
   priceUnit: string;
   imageUrl: string | null;
   description: string;
+  isDemo?: boolean;
   seatingCapacity: number | null;
   mileageKmpl: number | null;
   electricRangeKm: number | null;

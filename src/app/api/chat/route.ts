@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ChatRequestSchema } from "@/lib/validators";
-import { extractPreferences, generateResponse, isGeminiConfigured } from "@/lib/gemini";
+import { extractPreferences, generateResponse } from "@/lib/gemini";
 import { getRecommendations, resolveCarNames } from "@/lib/recommendation-engine";
 import { searchCarsByName } from "@/lib/car-queries";
 import { compareCars } from "@/lib/comparison-engine";

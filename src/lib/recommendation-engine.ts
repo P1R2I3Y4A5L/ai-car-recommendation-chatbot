@@ -1,4 +1,4 @@
-import type { CarSummary, CarFilters, ExtractedPreferences } from "@/types";
+import type { CarSummary, ExtractedPreferences } from "@/types";
 import { listCars, searchCarsByName } from "@/lib/car-queries";
 
 export interface RankedCar {
